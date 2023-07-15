@@ -17,6 +17,7 @@
     }
   }
 
+
   const imgContainer = ref('')
   const isUploading = ref(false)
 
@@ -30,6 +31,7 @@
 
         // 
       } else {
+
         const { data } = await axios.post('/api/uploadHandler', { image: userFile.value }, {
           headers: {
             'Content-Type': 'multipart/form-data'
