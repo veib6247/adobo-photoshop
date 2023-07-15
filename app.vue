@@ -4,7 +4,10 @@
   const appTitle = ref('Adobo Photoshop')
 
   useHead({
-    title: appTitle.value
+    title: appTitle.value,
+    link: [
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.png' }
+    ]
   })
 
   const userFile = ref<File>()
@@ -75,7 +78,7 @@
 
           <Transition>
             <div class="flex place-content-center" v-if="imgContainer">
-              <img class="h-96 w-96 rounded shadow object-cover" :src="imgContainer" />
+              <img class="rounded shadow object-cover" :src="imgContainer" />
             </div>
           </Transition>
         </div>
