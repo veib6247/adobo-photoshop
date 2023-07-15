@@ -1,4 +1,6 @@
 <script setup lang="ts">
+  import imgAdobo from './assets/img/adobo.png'
+
   const appTitle = ref('Adobo Photoshop')
 
   useHead({
@@ -18,38 +20,41 @@
     }
   }
 
-  const canvasHeight = ref(0)
-  const canvasWidth = ref(0)
-
   const cookFile = () => {
-    try {
-      if (userFile.value === undefined) {
-        alert('Please select an image file to upload!')
-      } else {
-        const reader = new FileReader()
+    if (userFile.value === undefined) {
+      alert('Please select an image file to upload!')
 
-        reader.readAsDataURL(userFile.value)
+      // 
+    } else {
+      const reader = new FileReader()
+      reader.readAsDataURL(userFile.value)
 
-        const canvas = document.getElementById('canvas') as HTMLCanvasElement
-        const ctx = canvas.getContext('2d')
+      const canvas = document.getElementById('canvas') as HTMLCanvasElement
+      const ctx = canvas.getContext('2d')
 
+      reader.onload = () => {
         const image = new Image()
 
-
-        reader.onload = () => {
-          image.src = reader.result as string
-          canvasHeight.value = image.height
-          canvasWidth.value = image.width
-        }
-
-
         image.onload = () => {
+          canvas.height = image.height
+          canvas.width = image.width
           ctx!.drawImage(image, 0, 0)
         }
 
+        image.src = reader.result as string
+
+        const adobo = new Image()
+
+        adobo.onload = () => {
+          // center the damn thing
+          const x = (canvas.width - adobo.width) * 0.5
+          const y = (canvas.height - adobo.height) * 0.5
+
+          ctx!.drawImage(adobo, x, y)
+        }
+
+        adobo.src = imgAdobo
       }
-    } catch (error) {
-      console.error(error)
     }
   }
 </script>
@@ -65,13 +70,13 @@
               {{ appTitle }}
             </h1>
             <p class="text-gray-400 text-sm">
-              Upload your photo, I'll add some spice to it!
+              Upload your photo, I'll add adobo!
             </p>
           </div>
 
           <div class="flex place-content-center gap-2">
-            <input type="file" class="file-input w-full max-w-xl" ref="file" accept="image/jpeg, image/png"
-              @change="handleSelection" />
+            <input type="file" class="file-input file-input-bordered file-input-secondary w-full max-w-xl" ref="file"
+              accept="image/jpeg, image/png" @change="handleSelection" />
 
             <button class="btn btn-primary" @click="cookFile">
               Cook
@@ -79,25 +84,11 @@
           </div>
 
           <div class="object-none flex place-content-center">
-            <canvas id="canvas" class="bg-zinc-400 rounded shadow" :height="canvasHeight" :width="canvasWidth"></canvas>
+            <canvas id="canvas" class="rounded shadow" height="500" width="500"></canvas>
           </div>
-
-
         </div>
       </div>
 
     </div>
   </section>
 </template>
-
-<style>
-.v-enter-active,
-.v-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.v-enter-from,
-.v-leave-to {
-  opacity: 0;
-}
-</style>
