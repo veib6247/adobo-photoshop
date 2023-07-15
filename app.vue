@@ -1,6 +1,4 @@
 <script setup lang="ts">
-  import axios from 'axios'
-
   const appTitle = ref('Adobo Photoshop')
 
   useHead({
@@ -20,34 +18,38 @@
     }
   }
 
+  const canvasHeight = ref(0)
+  const canvasWidth = ref(0)
 
-  const imgContainer = ref('')
-  const isUploading = ref(false)
-
-  const handleFileUpload = async () => {
+  const cookFile = () => {
     try {
-      isUploading.value = true
-      imgContainer.value = ''
-
       if (userFile.value === undefined) {
         alert('Please select an image file to upload!')
-
-        // 
       } else {
+        const reader = new FileReader()
 
-        const { data } = await axios.post('/api/uploadHandler', { image: userFile.value }, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        })
+        reader.readAsDataURL(userFile.value)
 
-        imgContainer.value = data
+        const canvas = document.getElementById('canvas') as HTMLCanvasElement
+        const ctx = canvas.getContext('2d')
+
+        const image = new Image()
+
+
+        reader.onload = () => {
+          image.src = reader.result as string
+          canvasHeight.value = image.height
+          canvasWidth.value = image.width
+        }
+
+
+        image.onload = () => {
+          ctx!.drawImage(image, 0, 0)
+        }
+
       }
     } catch (error) {
       console.error(error)
-
-    } finally {
-      isUploading.value = false
     }
   }
 </script>
@@ -71,16 +73,16 @@
             <input type="file" class="file-input w-full max-w-xl" ref="file" accept="image/jpeg, image/png"
               @change="handleSelection" />
 
-            <button class="btn btn-primary" @click="handleFileUpload">
-              <span class="loading loading-spinner" v-if="isUploading"></span>Upload
+            <button class="btn btn-primary" @click="cookFile">
+              Cook
             </button>
           </div>
 
-          <Transition>
-            <div class="flex place-content-center" v-if="imgContainer">
-              <img class="rounded shadow object-cover" :src="imgContainer" />
-            </div>
-          </Transition>
+          <div class="object-none flex place-content-center">
+            <canvas id="canvas" class="bg-zinc-400 rounded shadow" :height="canvasHeight" :width="canvasWidth"></canvas>
+          </div>
+
+
         </div>
       </div>
 
