@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
 
       //
     } else {
-      return { serverMsg: 'Unabled to read file!' }
+      return { serverMsg: 'Unable to read the file!' }
     }
   } catch (error) {
     return { serverMsg: error }
